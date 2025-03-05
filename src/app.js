@@ -4,32 +4,42 @@ const app = express();
 
 const PORT = 3001;
 
+const { adminAuth, userAuth } = require("./middlewares/auth");
+
 // app.get("/", (req, res) => {
 //Route Handler
 //   res.send("Route handler using get method only using '/' ");
 // });
 
-app.use(
-  "/user",
-  (req, res, next) => {
-    //Route Handler
-    res.send("Route handler 1");
-    next(); //Cannot set headers after they are sent to the client "we'll get this error"
-  },
-  (req, res, next) => {
-    console.log("handling route user 2");
-    res.send("2nd response");
-    next();
-  },
-  (req, res) => {
-    console.log("3rd response");
-  }
-);
+//
+// });
 
-app.use("/", (req, res) => {
-  //Route Handler
-  //this will select all the routes mathcing with '/' so we have to mmake sure it'll written last in the code.
-  res.send("Route handler with use '/'");
+app.use("/admin", adminAuth);
+
+app.post("/user/login", (req, res) => {
+  // here we don't nees authoristion to call login api
+  res.send("logged in successfully");
+});
+
+app.get("/user/data", userAuth, (req, res) => {
+  // in this case user accessing data so we need auth here
+  res.send("User Data sent");
+});
+
+app.get("/admin/getAllData", (req, res) => {
+  //To check if request authorized or not
+  // const token = "xyzsfdddn";
+  // const isAdminAuthorized = token === "xyz";
+  // if (isAdminAuthorized) {
+  //   res.send("All Data sent");
+  // } else {
+  //   res.status(401).send("Unauthorized request");
+  // }
+  res.send("All Data Sent");
+});
+
+app.get("/admin/deleteUser", (req, res) => {
+  res.send("Deleted a user");
 });
 
 app.listen(PORT, () => {
